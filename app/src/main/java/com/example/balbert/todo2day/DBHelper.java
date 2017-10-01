@@ -10,9 +10,26 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * DBHelper is a helper Model class.  DBHelper extends SQLiteOpenHelper
+ * and by extension the two methods, onCreate and onUpgrade.  These two
+ * methods must be implemented in order to create and update/upgrade the
+ * SQLite database.
+ *
+ * This class contains database constants and table constants.
+ * Database constants are for the database's name, any tables and the version.
+ *
+ * The table constants are for the columns of the table, such as the id, description and
+ * isDone.
+ *
+ * There are methods for:
+ * 1) adding a Task,
+ * 2) get all Tasks,
+ * 3) delete a Task,
+ * 4) update a Task,
+ * 5) get a single Task
+ *
  * Created by balbert on 9/28/2017.
  */
-
 class DBHelper extends SQLiteOpenHelper{
 
     // Create some useful database constants
@@ -29,6 +46,19 @@ class DBHelper extends SQLiteOpenHelper{
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
 
+    /**
+     * onCreate must be implemented when a class extends SQLiteOpenHelper.
+     * This is because without this method the database would never be created.
+     *
+     * It takes an SQLiteDatabase as a parameter.
+     *
+     * Inside the method we create any tables that the database requires.
+     * This is accomplished by calling execSQL on the database object passed into onCreate.
+     *
+     * Then an SQL statement to create a table is written and pass into the execSQL method being
+     * called on the database object.
+     * @param db
+     */
     @Override
     public void onCreate(SQLiteDatabase db) {
 
@@ -41,6 +71,17 @@ class DBHelper extends SQLiteOpenHelper{
         db.execSQL(createTable);
     }
 
+    /**
+     * onUpgrade must also be implemented when a class extends SQLiteOpenHelper.
+     * This method must be implemented because it will be called any time
+     * the database or its tables are update/upgraded.
+     *
+     * Our current implementation drops a specified table from the database and then
+     * creates it anew with any changes made.
+     * @param db
+     * @param i
+     * @param i1
+     */
     @Override
     public void onUpgrade(SQLiteDatabase db, int i, int i1) {
 
@@ -50,6 +91,11 @@ class DBHelper extends SQLiteOpenHelper{
         onCreate(db);
     }
 
+    /**
+     * This method is called on the database to insert a new Task.
+     *
+     * @param newTask is a Task object representing one of the Users tasks.
+     */
     public void addTask(Task newTask)
     {
         SQLiteDatabase db = getWritableDatabase();
@@ -62,6 +108,18 @@ class DBHelper extends SQLiteOpenHelper{
         db.close();
     }
 
+    /**
+     * getAllTasks() returns a List of all Tasks.
+     *
+     * The method instantiates an ArrayList,
+     * gets a readable reference to the database,
+     * instantiates a Cursor object which will be used like an iterable to collect
+     * all the Tasks from the database and add them to the ArrayList,
+     * close the Cursor and the database,
+     * returns the List.
+     *
+     * @return a list of all the Tasks contained in the database.
+     */
     public List<Task> getAllTasks()
     {
         List<Task> allTasksList = new ArrayList<>();
@@ -86,6 +144,12 @@ class DBHelper extends SQLiteOpenHelper{
         return allTasksList;
     }
 
+    /**
+     * deleteTask() gets a writable reference to the database,
+     * deletes the specified Task,
+     * and closes the database.
+     * @param taskToDelete a Task object so we know which Task to delete from the database.
+     */
     public void deleteTask (Task taskToDelete)
     {
         SQLiteDatabase db = getWritableDatabase();
@@ -94,6 +158,14 @@ class DBHelper extends SQLiteOpenHelper{
         db.close();
     }
 
+    /**
+     * updateTask() gets a writable reference to the database,
+     * instantiates a ContentValues object,
+     * the new values for the Task are put into the ContentValues object,
+     * the database is called and updates the specified Task,
+     * and closes the database.
+     * @param taskToEdit the Task to update/edit
+     */
     public void updateTask (Task taskToEdit)
     {
         SQLiteDatabase db = getWritableDatabase();
@@ -105,6 +177,20 @@ class DBHelper extends SQLiteOpenHelper{
         db.close();
     }
 
+    /**
+     * getSingleTask() takes an int id parameter to find the specified Task.
+     *
+     * Declares a new Task object, instantiated to null.
+     * A readable database reference is established.
+     * A Cursor object is instantiated and used to find the specified Task.
+     * The Cursor is first checked to be sure that the specified id exists,
+     * if it does, the declared new Task object gets the appropriate Task data.
+     * The Cursor and database connections are closed.
+     * The singleTask is returned.
+     *
+     * @param id an int to represent the task being searched for.
+     * @return
+     */
     public Task getSingleTask(int id)
     {
         Task singleTask = null;
