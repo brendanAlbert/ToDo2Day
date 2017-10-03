@@ -159,6 +159,16 @@ class DBHelper extends SQLiteOpenHelper{
     }
 
     /**
+     * deleteAllTasks() is used to .. so surprisingly... delete all the Tasks from the database.
+     */
+    public void deleteAllTasks()
+    {
+        SQLiteDatabase db = getWritableDatabase();
+        db.delete(DATABASE_TABLE, null, null);
+        db.close();
+    }
+
+    /**
      * updateTask() gets a writable reference to the database,
      * instantiates a ContentValues object,
      * the new values for the Task are put into the ContentValues object,
