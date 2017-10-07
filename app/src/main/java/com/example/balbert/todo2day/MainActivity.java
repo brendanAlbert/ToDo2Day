@@ -19,21 +19,9 @@ import java.util.List;
  *
  * This Controller creates a list to hold the Tasks.
  *
- * Since the app currently consists only of backend functionality, we have
- * no front-end View to observe the changes.  So this version, Version 1, is for testing
- * to be sure the interface to the SQLite database behaves correctly.
- * In a sense we are using TDD, Test Driven Development, which is considered a best practice.
- *
- * The onCreate() method sets the content view, and is currently full of code to
- * test the functionality of the SQLite database.  This will likely be modified heavily
- * in Version 2.
- *
- * We are testing:
- * 1) clearing the database
- * 2) adding Tasks
- * 3) instantiating new database helpers
- * 4) running loops to add Tasks to the database from the List
- * 5) checking that deleting a Task works correctly
+ * References are created for the database, the various Views and the TaskListAdapter
+ * which we use to inflate the Views for our custom Tasks, which appear as the text of
+ * the description and a checkbox.
  */
 public class MainActivity extends AppCompatActivity {
 
@@ -53,13 +41,10 @@ public class MainActivity extends AppCompatActivity {
     TaskListAdapter mTaskListAdapter;
 
     /**
-     * onCreate is currently checking that the SQLite database is working as intended.
-     * We create Tasks, create a new DBHelper, add the Tasks to the database, delete tasks,
-     * and clear the database to be sure the database is working.
+     * The onCreate method sets the content view.
+     * The database is initialized and Views are referenced.
      *
-     * This method also retrieves each Task object from the database and logs them to the Android
-     * Monitor for viewing and debugging purposes.
-     * @param savedInstanceState
+     * @param savedInstanceState recovers any previous state if applicable.
      */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,6 +57,28 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    /**
+     * The method onResume is used during the Activity lifecycle.
+     *
+     * As a user uses your app, various Activities which make up the functionality
+     * of the app are created, started, restarted, paused, resumed, stopped and destroyed.
+     *
+     * onResume is called after onStart when the app is first launched or restarted.
+     * If the user switches activities in the app, the first Activity is paused.
+     * Then the paused Activity can be returned to using onResume.
+     *
+     * Any method calls or functionality you would want to happen every time an Activity
+     * is returned to should be placed in onResume.
+     *
+     * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+     *
+     * The onResume method of onResume's super class is called.
+     *
+     * Our list of Tasks is filled by making a call to getAllTasks() from the database.
+     *
+     * mTaskListAdapter is the custom adapter we made which is used to render each Task
+     * with a checkbox.  It is initialized and set.
+     */
     @Override
     protected void onResume() {
         super.onResume();
@@ -86,6 +93,19 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    /**
+     * addTask() is called when the user taps the ADD TASK button after entering a description.
+     *
+     * TextUtils has a method isEmpty which we use here to check that the user in fact entered
+     * a Task description.  If they tapped add task without entering a description, we display
+     * a Toast to remind them to enter a description.
+     *
+     * If they did enter a description then we instantiate a new Task with it.
+     * The Task is then added to the database and the Task-list.
+     *
+     * We inform the adapter of the change and then set the EditText field back to an empty string.
+     * @param v
+     */
     public void addTask(View v)
     {
         // Check to see if the description is empty or null
@@ -107,6 +127,14 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     *  clearAllTask() is called when the user taps the CLEAR ALL TASKS button.
+     *  All the Tasks are deleted from the database, the list of Tasks is cleared,
+     *  the adapter is notified of the change so the View matches the Model/database.
+     *  Finally, a Toast pops up to inform the user of their action.
+     *
+     * @param v
+     */
     public void clearAllTasks(View v)
     {
         mDB.deleteAllTasks();
@@ -115,6 +143,21 @@ public class MainActivity extends AppCompatActivity {
         Toast.makeText(this, "All tasks have been cleared.", Toast.LENGTH_LONG).show();
     }
 
+    /**
+     *  toggleTaskStatus() is called whenever the user taps on a Task.
+     *  If the Task is checked, it becomes unchecked and vice versa.
+     *
+     *  We know which Task the user tapped because we downcast to a CheckBox the View object that
+     *  enters the method.
+     *
+     *  Behind each Task is a Tag, we create a Task object called selectedTask from that Tag.
+     *
+     *  We use this newly created selectedTask and update its isDone property.
+     *
+     *  Lastly the database is informed of the Task's updated isDone state.
+     *
+     * @param v
+     */
     public void toggleTaskStatus(View v)
     {
         CheckBox selectedCheckBox = (CheckBox) v;

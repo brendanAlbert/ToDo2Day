@@ -15,7 +15,7 @@ import java.util.List;
  * methods must be implemented in order to create and update/upgrade the
  * SQLite database.
  *
- * This class contains database constants and table constants.
+ * This class contains database and table constants.
  * Database constants are for the database's name, any tables and the version.
  *
  * The table constants are for the columns of the table, such as the id, description and
@@ -198,7 +198,7 @@ class DBHelper extends SQLiteOpenHelper{
      * The Cursor and database connections are closed.
      * The singleTask is returned.
      *
-     * @param id an int to represent the task being searched for.
+     * @param id an int which matches the id of the task being searched for.
      * @return
      */
     public Task getSingleTask(int id)
